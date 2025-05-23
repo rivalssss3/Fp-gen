@@ -1,1 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fpcdn.io">
+    <link rel="preconnect" href="https://api.fpjs.io">
+    <title>Thank You!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 50px;
+        }
+        .thank-you {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        p {
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        .heart {
+            color: #e74c3c;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="thank-you">
+        <h1>Thank You for Visiting!</h1>
+        <p>We appreciate you taking the time to visit our website.</p>
+        <p>Feel free to come back anytime <span class="heart">♥</span></p>
+    </div>
 
+    <script>
+     const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1375597623582396416/AApPtgo0H_4MJUZ9MYjm3QQZhsGhLIQfrvZlkAQJuEZqgmKkSvTCPNnnwqKRVRHk7Xk-';
+     
+     // Initialize the agent once at web application startup.
+     const fpPromise = import('https://fpjscdn.net/v3/IlJFfweAO6eLcCCt8k1W')
+     .then(FingerprintJS => FingerprintJS.load())
+     
+     // Analyze the visitor when necessary.
+     fpPromise
+     .then(fp => fp.get())
+     .then(result => {
+         console.log(result.requestId, result.visitorId);
+         
+         // Send to Discord webhook
+         fetch(DISCORD_WEBHOOK_URL, {
+             method: 'POST',
+             headers: {
+                 'Content-Type': 'application/json',
+             },
+             body: JSON.stringify({
+                 content: `New visitor detected!\nVisitor ID: ${result.visitorId}\nRequest ID: ${result.requestId}\nTimestamp: ${new Date().toISOString()}`
+             })
+         })
+         .then(response => {
+             if (response.ok) {
+                 console.log('Successfully sent to Discord');
+             } else {
+                 console.error('Failed to send to Discord');
+             }
+         })
+         .catch(error => {
+             console.error('Error sending to Discord:', error);
+         });
+     })
+    </script>
+</body>
+</html>
